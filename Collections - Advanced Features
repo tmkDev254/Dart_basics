@@ -1,0 +1,76 @@
+Section 7: Collections - Advanced Features
+Expanding on Lists, Sets, and Maps.
+
+7.1 List Methods
+add(), addAll(), insert(), remove(), removeAt(), clear()
+
+length
+
+isEmpty, isNotEmpty
+
+first, last
+
+indexOf(), lastIndexOf()
+
+contains()
+
+sublist()
+
+sort()
+
+map(): Transforms each element into a new type.
+
+Dart
+
+List<int> numbers = [1, 2, 3];
+List<String> doubledStrings = numbers.map((n) => (n * 2).toString()).toList();
+print(doubledStrings); // Output: [2, 4, 6]
+where(): Filters elements based on a condition.
+
+Dart
+
+List<int> evens = numbers.where((n) => n % 2 == 0).toList();
+print(evens); // Output: [2]
+fold() / reduce(): Aggregates elements into a single value.
+
+Dart
+
+int sum = numbers.fold(0, (prev, current) => prev + current); // 0 is initial value
+print(sum); // Output: 6
+7.2 Set Methods
+add(), addAll(), remove(), clear()
+
+length, isEmpty, isNotEmpty
+
+contains()
+
+union(), intersection(), difference()
+
+Dart
+
+Set<int> setA = {1, 2, 3};
+Set<int> setB = {3, 4, 5};
+
+print(setA.union(setB));       // Output: {1, 2, 3, 4, 5}
+print(setA.intersection(setB)); // Output: {3}
+print(setA.difference(setB));  // Output: {1, 2}
+7.3 Map Methods
+[] (access by key), []= (assign value)
+
+keys, values
+
+containsKey(), containsValue()
+
+remove()
+
+forEach()
+
+map(): Transforms map entries into new entries.
+
+Dart
+
+Map<String, int> scores = {'Alice': 90, 'Bob': 85};
+Map<String, String> grades = scores.map((key, value) {
+  return MapEntry(key, value >= 90 ? 'A' : 'B');
+});
+print(grades); // Output: {Alice: A, Bob: B}
