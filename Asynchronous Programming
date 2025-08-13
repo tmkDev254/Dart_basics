@@ -1,0 +1,135 @@
+Section 5: Asynchronous Programming (Futures, Async/Await)
+Crucial for Flutter, as UI must not block. Network requests, file I/O are asynchronous.
+
+5.1 Futures
+Represent a potential value or error that will be available at some time in the future.
+
+Think of them as a promise to deliver a result later.
+
+States:
+
+Uncompleted: The operation hasn't finished yet.
+
+Completed with a value: The operation finished successfully.
+
+Completed with an error: The operation failed.
+
+Dart
+
+Future<String> fetchData() {
+  // Simulate a network request
+  return Future.delayed(Duration(seconds: 2), () {
+    return 'Data fetched successfully!';
+  });
+}
+
+void main() {
+  print('Starting data fetch...');
+  fetchData().then((data) { // Using .then() to handle success
+    print(data);
+  }).catchError((error) { // Using .catchError() to handle errors
+    print('Error: $error');
+  }).whenComplete(() { // Always runs when Future completes (success or error)
+    print('Fetch operation completed.');
+  });
+  print('Continuing with other tasks...');
+}
+// Output (roughly):
+// Starting data fetch...
+// Continuing with other tasks...
+// (2 seconds delay)
+// Data fetched successfully!
+// Fetch operation completed.
+5.2 async and await
+Syntactic sugar that makes asynchronous code look and feel synchronous.
+
+async keyword: Marks a function as asynchronous. An async function always returns a Future.
+
+await keyword: Can only be used inside an async function. It pauses the execution of the async function until the Future it's awaiting completes.
+
+Dart
+
+Future<String> fetchUserData() async {
+  print('Fetching user data...');
+  // Simulate network delay
+  await Future.delayed(Duration(seconds: 3));
+  print('User data fetched!');
+  return 'John Doe';
+}
+
+Future<String> fetchOrderData() async {
+  print('Fetching order data...');
+  await Future.delayed(Duration(seconds: 2));
+  print('Order data fetched!');
+  return 'Order #123';
+}
+
+void main() async { // main function must be async to use await
+  print('Application started.');
+
+  String user = await fetchUserData(); // Execution pauses here for 3 seconds
+  print('User: $user');
+
+  String order = await fetchOrderData(); // Execution pauses here for 2 seconds
+  print('Order: $order');
+
+  print('Application finished.');
+}
+// Output (sequential, with pauses):
+// Application started.
+// Fetching user data...
+// (3 seconds delay)
+// User data fetched!
+// User: John Doe
+// Fetching order data...
+// (2 seconds delay)
+// Order data fetched!
+// Order: Order #123
+// Application finished.
+Error Handling with async/await: Use try-catch blocks, just like synchronous code.
+
+Dart
+
+Future<void> performOperation() async {
+  try {
+    String data = await Future.delayed(Duration(seconds: 1), () => throw 'Failed to load!');
+    print(data);
+  } catch (e) {
+    print('Caught error: $e');
+  } finally {
+    print('Operation attempt finished.');
+  }
+}
+
+void main() {
+  performOperation();
+}
+// Output:
+// (1 second delay)
+// Caught error: Failed to load!
+// Operation attempt finished.
+5.3 Future.wait
+Executes multiple Futures concurrently (at the same time) and waits for all of them to complete.
+
+Returns a List of results once all Futures are done.
+
+Dart
+
+Future<String> getQuote() => Future.delayed(Duration(seconds: 2), () => 'Be yourself;');
+Future<String> getAuthor() => Future.delayed(Duration(seconds: 1), () => 'Oscar Wilde.');
+
+void main() async {
+  print('Fetching quote and author...');
+
+  List<String> results = await Future.wait([getQuote(), getAuthor()]);
+
+  String quote = results[0];
+  String author = results[1];
+
+  print('$quote - $author');
+  print('All done!');
+}
+// Output (after ~2 seconds, because it waits for the longest Future):
+// Fetching quote and author...
+// Be yourself; - Oscar Wilde.
+// All done!
