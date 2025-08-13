@@ -1,0 +1,247 @@
+Section 4: Object-Oriented Programming (OOP)
+Dart is an object-oriented language. Everything is an object.
+
+4.1 Classes and Objects
+Class: A blueprint for creating objects. Defines properties (data) and methods (behavior).
+
+Object (Instance): A concrete realization of a class.
+
+Dart
+
+class Car {
+  String brand; // Property
+  String model;
+  int year;
+
+  // Constructor (default if not specified, or custom)
+  Car(this.brand, this.model, this.year); // Shorthand constructor
+
+  // Method
+  void drive() {
+    print('$brand $model is driving.');
+  }
+
+  // Getter
+  int get age => DateTime.now().year - year;
+
+  // Setter (less common for direct property access, but useful for validation)
+  set carBrand(String newBrand) {
+    if (newBrand.isNotEmpty) {
+      brand = newBrand;
+    }
+  }
+}
+
+void main() {
+  var myCar = Car('Toyota', 'Camry', 2020); // Creating an object
+  print(myCar.brand); // Accessing property: Output: Toyota
+  myCar.drive(); // Calling method: Output: Toyota Camry is driving.
+  print(myCar.age); // Accessing getter
+  myCar.carBrand = 'Honda'; // Using setter
+  print(myCar.brand); // Output: Honda
+}
+4.2 Constructors
+Default Constructor: If you don't declare one, Dart provides a default no-argument constructor.
+
+Named Constructors: Allows a class to have multiple constructors with descriptive names.
+
+Dart
+
+class Point {
+  double x, y;
+  Point(this.x, this.y); // Default (unnamed) constructor
+
+  // Named constructor for origin
+  Point.origin() : this(0, 0);
+
+  // Named constructor for from JSON
+  Point.fromJson(Map<String, double> json)
+      : x = json['x']!, // Use ! for non-null assertion if confident
+        y = json['y']!;
+}
+var p1 = Point(10, 20);
+var origin = Point.origin();
+var pFromJson = Point.fromJson({'x': 100, 'y': 200});
+const Constructors: As discussed in Section 1, used to create compile-time constant objects. Fields must be final.
+
+Factory Constructors: A special type of constructor that doesn't always create a new instance of the class. It can return an existing instance, an instance of a subclass, or an instance initialized from a cache.
+
+Dart
+
+class Logger {
+  static final Map<String, Logger> _cache = <String, Logger>{};
+
+  final String name;
+
+  factory Logger(String name) {
+    if (_cache.containsKey(name)) {
+      return _cache[name]!;
+    } else {
+      final logger = Logger._internal(name);
+      _cache[name] = logger;
+      return logger;
+    }
+  }
+
+  Logger._internal(this.name); // Private named constructor
+}
+
+void main() {
+  var logger1 = Logger('UI'); // Creates new instance
+  var logger2 = Logger('UI'); // Returns the same instance from cache
+  print(identical(logger1, logger2)); // Output: true
+}
+4.3 Inheritance (extends)
+A class can inherit properties and methods from another class.
+
+Dart only supports single inheritance (a class can only extend one other class).
+
+Use super to refer to the parent class's constructor or methods.
+
+Dart
+
+class Animal {
+  String name;
+  Animal(this.name);
+  void speak() {
+    print('$name makes a sound.');
+  }
+}
+
+class Dog extends Animal {
+  String breed;
+  Dog(String name, this.breed) : super(name); // Call parent constructor
+
+  @override // Good practice to use @override annotation
+  void speak() {
+    print('$name barks loudly!');
+  }
+
+  void fetch() {
+    print('$name is fetching.');
+  }
+}
+
+void main() {
+  var myDog = Dog('Buddy', 'Golden Retriever');
+  myDog.speak(); // Output: Buddy barks loudly! (Overridden method)
+  myDog.fetch(); // Output: Buddy is fetching.
+}
+4.4 Mixins (with)
+Mixins allow you to reuse a class's code in multiple class hierarchies.
+
+They provide a way to include predefined functionality in a class without using inheritance.
+
+They are like interfaces with default implementations.
+
+Dart
+
+mixin CanFly {
+  void fly() {
+    print('I can fly!');
+  }
+}
+
+mixin CanSwim {
+  void swim() {
+    print('I can swim!');
+  }
+}
+
+class Duck with CanFly, CanSwim {
+  String name;
+  Duck(this.name);
+  void quack() => print('$name says quack!');
+}
+
+class Airplane with CanFly {
+  void takeOff() => print('Taking off...');
+}
+
+void main() {
+  var donald = Duck('Donald');
+  donald.quack();
+  donald.fly(); // From CanFly mixin
+  donald.swim(); // From CanSwim mixin
+
+  var boeing = Airplane();
+  boeing.takeOff();
+  boeing.fly();
+}
+4.5 Abstract Classes
+Classes that cannot be instantiated directly.
+
+Can contain abstract methods (methods without a body) that must be implemented by subclasses.
+
+Can also contain concrete methods.
+
+Dart
+
+abstract class Shape {
+  // Abstract method - must be implemented by subclasses
+  double getArea();
+
+  // Concrete method
+  void printInfo() {
+    print('This is a shape.');
+  }
+}
+
+class Circle extends Shape {
+  double radius;
+  Circle(this.radius);
+
+  @override
+  double getArea() {
+    return 3.14 * radius * radius;
+  }
+}
+
+// var shape = Shape(); // ERROR: Cannot instantiate abstract class
+var circle = Circle(5);
+print(circle.getArea());
+circle.printInfo();
+4.6 Interfaces (implements)
+In Dart, every class implicitly defines an interface containing all its methods and instance variables.
+
+You use the implements keyword to indicate that a class is implementing an interface.
+
+A class implementing an interface must provide a concrete implementation for all members of that interface (unless it's an abstract class).
+
+Dart
+
+class Speaker {
+  void speak() {
+    print('Speaking...');
+  }
+}
+
+class Writer {
+  void write() {
+    print('Writing...');
+  }
+}
+
+// A Person who can speak and write
+class Person implements Speaker, Writer {
+  @override
+  void speak() {
+    print('Person is speaking.');
+  }
+
+  @override
+  void write() {
+    print('Person is writing.');
+  }
+}
+
+void main() {
+  var p = Person();
+  p.speak();
+  p.write();
+}
+extends vs. implements:
+
+extends: Inherits implementation and interface. Can use super. Only one extends.
+
+implements: Only inherits the interface (contract). Must re-implement all methods. Can implement multiple interfaces.
