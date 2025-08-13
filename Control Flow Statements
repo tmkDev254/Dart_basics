@@ -1,0 +1,109 @@
+Section 3: Control Flow Statements
+Control flow determines the order in which statements are executed.
+
+3.1 Conditional Statements (if, else if, else)
+Dart
+
+int score = 85;
+
+if (score >= 90) {
+  print('Grade: A');
+} else if (score >= 80) {
+  print('Grade: B'); // This will execute
+} else {
+  print('Grade: C');
+}
+3.2 Switch Statements
+Useful for multiple fixed conditions. Must use break; (unless using continue to a label or fall-through implicitly if no code block).
+
+Dart
+
+String grade = 'B';
+
+switch (grade) {
+  case 'A':
+    print('Excellent!');
+    break;
+  case 'B':
+    print('Very Good!'); // This will execute
+    break;
+  case 'C':
+    print('Good!');
+    break;
+  default:
+    print('Needs Improvement.');
+}
+Enums with Switch: Very common in Flutter for handling different states.
+
+Dart
+
+enum Status { loading, success, error }
+Status currentStatus = Status.success;
+
+switch (currentStatus) {
+  case Status.loading:
+    print('Loading data...');
+    break;
+  case Status.success:
+    print('Data loaded successfully!');
+    break;
+  case Status.error:
+    print('An error occurred.');
+    break;
+}
+3.3 Loops (for, while, do-while)
+for loop:
+
+Dart
+
+for (int i = 0; i < 5; i++) {
+  print('Count: $i');
+}
+// Output: Count: 0, Count: 1, ... Count: 4
+for-in loop (Enhanced For): Iterates over elements of a collection.
+
+Dart
+
+List<String> fruits = ['apple', 'banana', 'cherry'];
+for (var fruit in fruits) {
+  print('I like $fruit');
+}
+while loop: Executes as long as a condition is true.
+
+Dart
+
+int i = 0;
+while (i < 3) {
+  print('While loop: $i');
+  i++;
+}
+do-while loop: Executes the block at least once, then checks the condition.
+
+Dart
+
+int count = 0;
+do {
+  print('Do-while loop: $count');
+  count++;
+} while (count < 0); // Executes once
+// Output: Do-while loop: 0
+3.4 break and continue
+break: Terminates the innermost loop or switch statement.
+
+continue: Skips the rest of the current iteration and proceeds to the next iteration of the loop.
+
+Dart
+
+for (int i = 0; i < 5; i++) {
+  if (i == 2) {
+    continue; // Skip 2
+  }
+  if (i == 4) {
+    break; // Exit loop at 4
+  }
+  print('Loop value: $i');
+}
+// Output:
+// Loop value: 0
+// Loop value: 1
+// Loop value: 3
