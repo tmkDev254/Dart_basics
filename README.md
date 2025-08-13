@@ -1,2 +1,2 @@
 # Dart_basics
-Dart Fundamentals
+Comprehensive Dart Fundamentals for Flutter Proficiency
