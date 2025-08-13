@@ -1,0 +1,84 @@
+Section 6: Error Handling
+Handling errors gracefully is crucial for robust applications.
+
+6.1 try-on-catch-finally
+try: Code that might throw an exception.
+
+on: Catches specific types of exceptions.
+
+catch: Catches any type of exception (usually paired with on or used alone for generic catch).
+
+catch (e): Catches the exception object.
+
+catch (e, s): Catches the exception object (e) and the stack trace (s).
+
+finally: Code that always executes, regardless of whether an exception occurred or was caught.
+
+Dart
+
+void main() {
+  try {
+    int result = 10 ~/ 0; // Throws IntegerDivisionByZeroException
+    print('Result: $result'); // This line is skipped
+  } on IntegerDivisionByZeroException { // Catches specific exception
+    print('Cannot divide by zero!');
+  } on FormatException catch (e) { // Catches another specific exception type
+    print('Format error: $e');
+  } catch (e, s) { // Catches any other exception and its stack trace
+    print('An unknown error occurred: $e');
+    print('Stack trace: $s');
+  } finally {
+    print('Execution attempt completed.');
+  }
+
+  print('\nAnother example with no error:');
+  try {
+    int num = int.parse('123');
+    print('Parsed number: $num');
+  } catch (e) {
+    print('Error during parsing: $e');
+  } finally {
+    print('Parsing attempt completed.');
+  }
+}
+// Output:
+// Cannot divide by zero!
+// Execution attempt completed.
+
+// Another example with no error:
+// Parsed number: 123
+// Parsing attempt completed.
+6.2 throw keyword
+Used to explicitly throw an exception.
+
+Dart
+
+void checkAge(int age) {
+  if (age < 0) {
+    throw ArgumentError('Age cannot be negative.');
+  } else if (age < 18) {
+    throw Exception('Must be 18 or older.');
+  }
+  print('Age is valid.');
+}
+
+void main() {
+  try {
+    checkAge(-5);
+  } catch (e) {
+    print('Caught error: $e'); // Output: Caught error: Invalid argument(s): Age cannot be negative.
+  }
+
+  try {
+    checkAge(10);
+  } catch (e) {
+    print('Caught error: $e'); // Output: Caught error: Exception: Must be 18 or older.
+  }
+
+  try {
+    checkAge(25);
+  } catch (e) {
+    print('Caught error: $e');
+  }
+  // Output: Age is valid. (from checkAge(25))
+}
