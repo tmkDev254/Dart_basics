@@ -1,0 +1,114 @@
+Section 8: Null Safety
+A major feature in Dart to prevent null reference errors, making apps more robust.
+
+8.1 Non-Nullable by Default
+Variables are non-nullable by default. This means they must have a value and cannot be null.
+
+Dart
+
+int myNumber = 10;
+// myNumber = null; // ERROR: A value of type 'Null' can't be assigned to a variable of type 'int'.
+8.2 Nullable Types (?)
+To allow a variable to be null, you add a ? after its type.
+
+Dart
+
+int? nullableNumber; // This is allowed, nullableNumber is null by default
+nullableNumber = 10; // OK
+nullableNumber = null; // OK
+8.3 Flow Analysis
+Dart's compiler intelligently tracks if a nullable variable has been checked for null and treats it as non-nullable within that scope.
+
+Dart
+
+String? name; // Can be null
+
+if (DateTime.now().hour > 12) {
+  name = 'Afternoon User';
+}
+
+if (name != null) { // Dart knows name is non-null here
+  print(name.length); // OK, no error
+} else {
+  print('Name is null.');
+}
+
+// Another example:
+String? greet(bool giveName) {
+  if (giveName) return 'Hello';
+  return null;
+}
+
+void processGreeting() {
+  String? message = greet(false);
+  if (message == null) {
+    print('No message received.');
+    return; // Exit if null
+  }
+  // At this point, Dart knows 'message' is not null
+  print('Received message: ${message.toUpperCase()}'); // No null-aware operator needed
+}
+8.4 Null-Aware Operators (Revisited from Section 1)
+?. (null-aware access): Safely access members.
+
+?? (null coalescing): Provide a default value.
+
+??= (null-aware assignment): Assign if null.
+
+! (null assertion operator): Tell Dart "trust me, this won't be null." Use with extreme caution, as it throws an error if null.
+
+Dart
+
+String? personName;
+print(personName?.length); // Prints null
+
+String userName = personName ?? 'Guest'; // userName is 'Guest'
+
+personName ??= 'Default Name'; // personName becomes 'Default Name'
+
+String mustBeNonNull = personName!; // Throws error if personName was still null
+8.5 late Keyword
+Used for non-nullable variables that will be initialized later, but before they are used.
+
+Useful for:
+
+Lazy initialization: When a variable's value might be expensive to compute, or not needed immediately.
+
+Circular dependencies: When objects depend on each other for initialization.
+
+Non-nullable instance variables: When declared without an initializer in a class, they can be late and initialized in the constructor or initState (in Flutter).
+
+Dart
+
+late String description; // Declared, but not initialized immediately
+
+void initialize() {
+  description = 'This is a lazy-loaded description.';
+  print('Description initialized.');
+}
+
+void main() {
+  // description; // ERROR: Accessing before initialization
+
+  initialize(); // Now it's initialized
+
+  print(description); // OK: This is a lazy-loaded description.
+}
+
+// In a class (common Flutter pattern)
+class MyService {
+  late String _config; // Will be initialized by the constructor
+
+  MyService(String initialConfig) {
+    _config = initialConfig;
+  }
+
+  void doWork() {
+    print('Config: $_config');
+  }
+}
+
+void main() {
+  var service = MyService('API_KEY_123');
+  service.doWork(); // Output: Config: API_KEY_123
+}
