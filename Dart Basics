@@ -233,3 +233,207 @@ var buffer = StringBuffer()
   ..write(' ')
   ..writeln('Dart!'); // returns buffer
 print(buffer.toString()); // Output: Hello Dart!
+
+
+//Comprehensive example using Flutter
+
+// 1. Import the Flutter Material library.
+// This line gives us access to all the pre-built widgets
+// that follow Google's Material Design principles.
+import 'package:flutter/material.dart';
+
+// The main function is the entry point of every Flutter app.
+// It's the first thing that gets executed.
+void main() {
+  // `runApp` is the core function that takes a widget and makes it the
+  // root of the widget tree, which then gets rendered on the screen.
+  // We use `const` here as a performance optimization, telling Flutter that
+  // this widget and its children will not change at runtime.
+  runApp(const MyFlutterApp());
+}
+
+// 2. This is the root widget of our application.
+// We use a StatelessWidget because its properties (like `appTitle`)
+// don't change after it's created.
+class MyFlutterApp extends StatelessWidget {
+  // The constructor uses the `super.key` shorthand. This is a modern,
+  // concise way to pass the widget's unique `key` identifier to its parent class.
+  const MyFlutterApp({super.key});
+
+  // The `build` method describes the UI that this widget represents.
+  // It's called by the Flutter framework to render the widget on the screen.
+  @override
+  Widget build(BuildContext context) {
+    // 1.3 Built-in Data Types: We declare some simple variables.
+    // Dart infers the type of `appTitle` as `String`.
+    var appTitle = 'Dart & Flutter Fundamentals';
+    // We explicitly declare `paddingValue` as a `double`.
+    double paddingValue = 16.0;
+
+    // `MaterialApp` is the core of a Material Design app. It provides a lot of
+    // app-wide functionality like theming, navigation, and titles.
+    return MaterialApp(
+      // 1.2 `const` for widget trees that don't change. We don't use it directly here
+      // because `appTitle` is a variable.
+      // The `title` property is used for the app's name in the OS, like in the
+      // list of recent apps on Android or the browser tab on the web.
+      title: appTitle,
+      // `Scaffold` provides the basic visual layout for a single screen.
+      // It includes space for a header (`appBar`), body, and other elements.
+      home: Scaffold(
+        // The `AppBar` widget is the header at the top of the screen.
+        appBar: AppBar(
+          // The `title` property of the `AppBar` displays the text on the screen.
+          // It's a `Text` widget, whose content is the `appTitle` variable.
+          title: Text(appTitle),
+        ),
+        // The `body` of the `Scaffold` is the main content area below the AppBar.
+        // We are passing a custom `MyDataDisplay` widget here.
+        body: MyDataDisplay(
+          // 1.1 Variable & Type Inference: We pass our `paddingValue` variable
+          // to the `padding` property of our custom widget.
+          padding: paddingValue,
+        ),
+      ),
+    );
+  }
+}
+
+// 2. A StatefulWidget to manage dynamic data and state.
+// This is the widget that will display changing information.
+class MyDataDisplay extends StatefulWidget {
+  // `final` variable to hold immutable data passed to the widget.
+  // The `padding` value is received from the parent and cannot be changed here.
+  final double padding;
+
+  // The constructor requires the `padding` value to be provided.
+  const MyDataDisplay({super.key, required this.padding});
+
+  // The framework calls this to create the mutable State object.
+  // The State object holds all the data that can change over time.
+  @override
+  State<MyDataDisplay> createState() => _MyDataDisplayState();
+}
+
+// The State class where the mutable data and logic live.
+// The underscore `_` at the start makes this class private to this file.
+class _MyDataDisplayState extends State<MyDataDisplay> {
+  // 1.2 `late final` and `final` for variables initialized only once.
+  // `late final` is a promise that `_apiEndpoint` will be initialized before its first use.
+  late final String _apiEndpoint;
+  // A `dynamic` variable to show its flexibility (use sparingly).
+  // Its type can change at runtime.
+  dynamic _dataFromApi;
+
+  // 1.3 Built-in Data Types: Boolean for conditional logic.
+  // We use `_isLoading` to track when our "network request" is running.
+  bool _isLoading = true;
+  bool _isLoggedIn = true;
+
+  // `initState` is a lifecycle method called once when this widget is first created.
+  // It's the perfect place to perform one-time setup, like a network call.
+  @override
+  void initState() {
+    super.initState();
+    // 1.2 `late final` variable is initialized here, fulfilling our promise.
+    _apiEndpoint = 'https://api.example.com/data';
+    
+    // We use `Future.delayed` to simulate a network request that takes 2 seconds.
+    Future.delayed(const Duration(seconds: 2), () {
+      // `setState` is crucial! It tells Flutter to rebuild the widget
+      // and update the UI to reflect our new data.
+      setState(() {
+        // Here, we update our `dynamic` variable with the simulated data.
+        _dataFromApi = {'name': 'Alice', 'score': 95};
+        _isLoading = false;
+      });
+    });
+  }
+
+  // The `build` method is called every time the widget's state changes.
+  // It describes what the UI should look like based on the current state.
+  @override
+  Widget build(BuildContext context) {
+    // 1.1 Variables and Type Inference: The type of `headerWidgets` is inferred as `List<Widget>`.
+    var headerWidgets = [
+      const Text('User Data', style: TextStyle(fontSize: 20)),
+      const Divider(),
+    ];
+    
+    // 1.3 Built-in Data Types: A `const` list of strings for our product names.
+    const List<String> productNames = ['Laptop', 'Mouse', 'Keyboard', 'Monitor'];
+
+    // `SingleChildScrollView` allows the content to be scrollable if it's too long.
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(widget.padding),
+        child: Column(
+          // `crossAxisAlignment` aligns the children to the start of the column (left side).
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1.3 Spread Operator (`...`): This operator unpacks the items from a list
+            // and inserts them directly into this list of widgets.
+            ...headerWidgets,
+            
+            // 1.4 Conditional (Ternary) Operator: A concise way to choose one widget or another.
+            // If `_isLoading` is true, show the spinner. Otherwise, show the user data.
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                :
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1.4 Null-aware Operators (`??`, `?.`): Safely handle a null value.
+                    // `_dataFromApi?.['name']`: The `?.` safely checks if `_dataFromApi` is null
+                    // before trying to access the `'name'` property.
+                    // `?? 'N/A'`: The `??` operator provides a fallback value ('N/A')
+                    // if the result of the previous expression is null.
+                    Text(
+                      'Name: ${_dataFromApi?['name'] ?? 'N/A'}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    // 1.3 String Interpolation
+                    Text(
+                      'Score: ${_dataFromApi?['score'] ?? 'N/A'}',
+                    ),
+                  ],
+                ),
+            
+            // `SizedBox` is a simple widget for creating space.
+            const SizedBox(height: 20),
+            const Text('Product List', style: TextStyle(fontSize: 20)),
+            const Divider(),
+            
+            // 1.3 Collection `for` & `if`: Dynamically build a list of widgets.
+            // We use the spread operator on a list created on the fly.
+            ...[
+              // The `for` loop dynamically generates a list of `Container` widgets.
+              for (int i = 0; i < productNames.length; i++)
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      // 1.3 String Interpolation: We embed a variable into a string.
+                      Text('${i + 1}. ${productNames[i]}'),
+                      // `Spacer` takes up all available space between widgets.
+                      const Spacer(),
+                      // 1.3 `if` statement for conditional rendering inside a collection.
+                      // The `Icon` widget is only included in the list if `_isLoggedIn` is true.
+                      if (_isLoggedIn)
+                        const Icon(Icons.shopping_cart, color: Colors.blue),
+                    ],
+                  ),
+                ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+}
+
