@@ -91,3 +91,5 @@ numbers.forEach((number) { // Anonymous function as an argument
 // 2
 // 4
 // 6
+
+Functions can also be ruturned from another function
