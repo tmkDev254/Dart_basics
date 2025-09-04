@@ -93,3 +93,287 @@ numbers.forEach((number) { // Anonymous function as an argument
 // 6
 
 Functions can also be ruturned from another function
+
+//Comprehensive example using flutter:
+
+// The main function is the entry point of the app.
+void main() {
+  // `runApp` takes the root widget of the app and attaches it to the screen.
+  // Using `const` is a performance optimization, telling Flutter to reuse the
+  // widget tree if it doesn't change.
+  runApp(const MyFunctionApp());
+}
+
+// A simple stateless widget that acts as the root of the application.
+class MyFunctionApp extends StatelessWidget {
+  const MyFunctionApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Declaring a variable for the app's title. Dart infers the type as String.
+    String appTitle = 'Functions in Dart';
+    
+    // `MaterialApp` provides the basic design framework for a Material Design app.
+    return MaterialApp(
+      // The `title` property is used by the operating system for the app's name
+      // in the task switcher or app listing.
+      title: appTitle,
+      // `Scaffold` provides the fundamental visual layout structure.
+      home: Scaffold(
+        // The `AppBar` is the header at the top of the screen.
+        appBar: AppBar(
+          // The `title` property of the `AppBar` is what the user sees on the screen.
+          title: Text(appTitle),
+        ),
+        // The `body` of the `Scaffold` is the main content area.
+        // We use a `const` constructor for `FunctionExamples` because it is
+        // a `StatefulWidget` and its properties don't change here.
+        body: const FunctionExamples(),
+      ),
+    );
+  }
+}
+
+// This StatefulWidget holds the state and logic for our function examples.
+class FunctionExamples extends StatefulWidget {
+  const FunctionExamples({super.key});
+
+  // The framework calls this method to create the mutable state object.
+  @override
+  State<FunctionExamples> createState() => _FunctionExamplesState();
+}
+
+// The State class where we will define and use our functions.
+// The underscore `_` makes this class private to this file.
+class _FunctionExamplesState extends State<FunctionExamples> {
+  // These variables hold the state that will be updated when functions are called.
+  String _message = 'Press a button to see a function in action';
+  num _result = 0;
+
+  // 2.1 Function Declaration: `void` return type
+  // This function takes a required positional parameter `name` and updates the UI.
+  void _greet(String name){
+    // `setState` tells Flutter to rebuild the UI with the new `_message` value.
+    setState(() {
+      _message = 'Hello $name';
+    });
+  }
+
+  // 2.1 Function Declaration: returns a value
+  // This function takes two required positional parameters and returns an int.
+  int _add(int a, int b) {
+    return a + b;
+  }
+
+  // 2.1 Arrow Function: for single-expression functions
+  // This is a concise way to define a function that returns a value.
+  int _multiply(int a, int b) => a*b;
+
+  // 2.2 Parameters: Optional Positional Parameters
+  // The `greeting` parameter is optional and can be omitted.
+  void sayHi(String name, [String? greeting]) {
+    setState(() {
+      // The `??` operator provides a default value (`'Hi'`) if `greeting` is null.
+      _message = '${greeting??'Hi'} $name';
+    });
+  }
+
+  // 2.2 Parameters: Named Parameters with `required` and default values
+  void _configure({required String title, String color = 'blue', int? width}) {
+    setState(() {
+      // We use string interpolation to display the properties.
+      _message = 'Title: $title, Color: $color, Width: ${width??'Auto'}';
+    });
+  }
+
+  // 2.3 First-Class Functions: Passing a function as an argument (a callback)
+  // The `operation` parameter is a function that will be executed inside this function.
+  void _executeOperation(num a, num b, Function operation){
+    _result = operation(a,b);
+    setState(() {
+      _message = 'Result of operation: $_result';
+    });
+  }
+  
+  // 2.4 Anonymous Functions (Lambdas) with `forEach`
+  // The `forEach` method takes an anonymous function to process each element in the list.
+  void _processNumbers() {
+    List<int> numbers = [10,20,30];
+    String tempMessage = 'Processing numbers: ';
+    // The anonymous function `(number) => ...` is executed for each number.
+    numbers.forEach((number) => tempMessage += '${number*2} ');
+    setState(() {
+      _message = tempMessage;
+    });
+  }
+
+  // Functions can be returned from another function.
+  Function _createMultiplier(int factor) {
+    // This is a closure, it "remembers" the `factor` variable from its
+    // surrounding scope even after `_createMultiplier` has finished running.
+    return (int number) => number * factor;
+  }
+
+  void _doMultiplication(){
+    // `multiplyByFive` is now a function that multiplies its argument by 5.
+    var multiplyByFive = _createMultiplier(5);
+    _result = multiplyByFive(10).toDouble(); // convert int to double for consistency
+    setState(() {
+      _message = 'Result of returned function: $_result';
+    });
+  }
+
+  // The build method is called whenever the state changes.
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Display area for the result and messages
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8)
+              ),
+              child: Text(
+                _message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            
+            // --- UI for each function example ---
+            
+            // Example of a function with positional parameters
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function takes two required positional parameters and returns a value.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _add', () {
+                  int sum = _add(5, 7);
+                  setState(() {
+                    _result = sum.toDouble();
+                    _message = 'Result of _add: $_result'; 
+                  });
+                })),
+              ],
+            ),
+            
+            // Example of a function with a single required parameter
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function takes a required positional parameter `name` and has no return value.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _greet', () => _greet('Alice')),),
+              ],
+            ),
+
+            // Example of a function with an optional parameter
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function takes a required positional parameter and an optional one.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _sayHi', () => sayHi('Bob')),),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _sayHi(custom greeting)', () => sayHi('Bob','Whats up')),),
+              ],
+            ),
+
+            // Example of a function using an arrow syntax
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This is an arrow function that takes two numbers and returns their product.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2,
+                  child: _buildButton('call _multiply', () {
+                     int product=_multiply(8, 5);
+                     setState(() {
+                       _result = product.toDouble();
+                       _message = 'Result of _multiply: $_result';
+                     });
+                   }),
+                ),
+              ],
+            ),
+            
+            // Example of a function with named parameters
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function takes named parameters, including a `required` one and a default value.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _configure(default color)', () => _configure(title: 'settings',width: 300))),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _configure(default width)', () => _configure(title: 'settings',color: 'Red'))),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _configure(default color and width)', () => _configure(title: 'settings',))),
+              ],
+            ),
+            
+            // Example of a function that takes another function as a callback
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function takes a callback to perform an operation like add, subtract, multiply, or divide.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _executeOperation(add)', () => _executeOperation(10, 5, (x,y) => x + y))),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _executeOperation(subtract)', () => _executeOperation(10, 5, (x,y) => x - y))),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _executeOperation(multiply)', () => _executeOperation(10, 5, (x,y) => x * y))),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _executeOperation(divide)', () => _executeOperation(10, 5, (x,y) => x / y))),
+              ],
+            ),
+
+            // Example of an anonymous function with `forEach`
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function uses a `forEach` loop with an anonymous function to process a list.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _processNumbers', () => _processNumbers())),
+              ],
+            ),
+
+            // Example of a function that returns a function
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Expanded(flex: 3, child: Text('This function returns another function (a closure) that can be used later.')),
+                const SizedBox(width: 16,),
+                Expanded(flex: 2, child: _buildButton('call _doMultiplication', () => _doMultiplication()),),
+              ],
+            ),
+          ],
+        ),
+      ),
+      );
+  }
+  
+  // A helper function to build styled buttons.
+  Widget _buildButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        ), 
+        child: Text(text),
+        ),
+      );
+  }
+}
